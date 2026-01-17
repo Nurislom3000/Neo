@@ -1,0 +1,30 @@
+INPUT height
+INPUT weight
+
+IF (height > 170) AND (weight < 85)
+    THEN OUTPUT "Ypu met"
+    
+    ELSE OUTPUT "Fuck you"
+ENDIF
+
+CASE OF height
+    Milo: OUTPUT "FUCK you AAAA"
+    12: 'C'
+    true: true
+    OTHERWISe: OUTPUT "FUUUUUUck"
+ENDCASE
+
+
+DECLARE myarray: ARRAY[1:10] OF NUMBER
+
+FOR i <-- 1 TO 10
+    myarray[i] <-- "i + 1"
+
+FOR counter <-- 1 TO 10
+    OUTPUT counter <-- counter * counter
+NEXT Counter
+
+REPEAT 
+    OUTPUT 'C'
+    counter <-- counter + 1
+UNTILL counter >= 12

@@ -1,17 +1,25 @@
 'use strict'
 
-const obj1 = {
-	id: 12,
-	pasport: {
-		name: 'Bob',
-		surname: 'Ewel',
-	},
-}
+// const logger = () => console.log(this.name)
 
-const obj2 = structuredClone(obj1)
+// const user = {
+// 	name: 'bob',
+// 	sayHi() {
+// 		logger()
+// 	},
+// }
 
-console.log(obj2)
+// const admin = {
+// 	name: 'admin',
+// 	sayAdmin() {
 
-obj2.name = 'May'
+// 	},
+// }
 
-console.log(obj1)
+// admin.sayAdmin()
+
+const array = [0]
+array[6] = 6
+array[12] = 12
+
+console.log(array)
