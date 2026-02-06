@@ -1,10 +1,26 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import Choise from './Choise'
 
 const Home = () => {
-	const navigate = useNavigate()
+	const [showChoise, setShowChoise] = useState(false)
+	const [isChoiseClosing, setIsChoiseClosing] = useState(false)
+
+	const closeChoise = () => {
+		if (!showChoise || isChoiseClosing) return
+		setIsChoiseClosing(true)
+		setTimeout(() => {
+			setShowChoise(false)
+			setIsChoiseClosing(false)
+		}, 240)
+	}
 	return (
-		<div className='relative min-h-screen w-full overflow-hidden font-serif'>
+		<div
+			onClick={() => {
+				closeChoise()
+			}}
+			className='relative min-h-screen w-full overflow-hidden font-serif'
+		>
+			{showChoise && <Choise closing={isChoiseClosing} />}
 			<audio autoPlay loop hidden>
 				<source src='/LobbyMusic.mp3' type='audio/mpeg' />
 				Your browser does not support the audio element.
@@ -34,10 +50,16 @@ const Home = () => {
 				</p>
 				<br />
 				Today you are speaking with{' '}
-				<span className='text-white font-semibold'>Amir Temur</span>.
+				<span className='text-white font-semibold'>Historians</span>.
 				<button
-					onClick={() => {
-						navigate('/dialog')
+					onClick={e => {
+						e.stopPropagation()
+						if (!showChoise) {
+							setShowChoise(true)
+						setIsChoiseClosing(false)
+						} else {
+							closeChoise()
+						}
 					}}
 					className='mt-12 px-10 py-4 text-lg border border-white/60 
 						hover:bg-white hover:text-black transition-all duration-500
@@ -45,9 +67,6 @@ const Home = () => {
 				>
 					Start dialogue
 				</button>
-				<p className='absolute bottom-8 text-sm text-white/50 animate-pulse'>
-					Click when you are ready to hear the past
-				</p>
 			</div>
 		</div>
 	)

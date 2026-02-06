@@ -1,27 +1,44 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import choose from '/choose.svg'
-import { amirDialog } from '../assets/amirDialog.js'
-const Dialog = () => {
+import { ulugbekDialog } from '../assets/mirzoDialog.js'
+
+const Mirzo = () => {
 	const questionStyle =
 		'flex w-full items-center justify-start gap-7 text-left font-normal text-[20px] text-[#fff7e8] transition-all group rounded-3xl'
 	const arrowStyle =
 		'transition-transform group-hover:translate-x-3 duration-400'
 	const MotionSpan = motion.span
 
-	// current dialog node key (start, rise_answer, etc.)
 	const [currentNode, setCurrentNode] = useState('start')
-	const [playedAudioNodes, setPlayedAudioNodes] = useState(new Set())
 
-	// typing animation
+	// typing animation + audio playback 🔊
 	const [displayedText, setDisplayedText] = useState('')
 	const textBoxRef = useRef(null)
-	const dialogAudioRef = useRef(null)
+	const audioRef = useRef(null)
 	const backgroundMusicRef = useRef(null)
-	const fullText = amirDialog[currentNode].text
+	const fullText = ulugbekDialog[currentNode].text
 
 	useEffect(() => {
 		setDisplayedText('')
+
+		// stop previous audio if any
+		if (audioRef.current) {
+			audioRef.current.pause()
+			audioRef.current = null
+		}
+
+		// start audio for this node if provided
+		const audioSrc = ulugbekDialog[currentNode].audio
+		if (audioSrc) {
+			audioRef.current = new Audio(audioSrc)
+			// optional: adjust volume
+			audioRef.current.volume = 0.95
+			audioRef.current.play().catch(() => {
+				// autoplay may be blocked; ignore errors
+			})
+		}
+
 		let index = 0
 
 		const interval = setInterval(() => {
@@ -33,22 +50,14 @@ const Dialog = () => {
 			}
 		}, 70)
 
-		return () => clearInterval(interval)
-	}, [fullText])
-
-	// Play audio for current node if it has one
-	useEffect(() => {
-		if (
-			amirDialog[currentNode].audio &&
-			!playedAudioNodes.has(currentNode) &&
-			dialogAudioRef.current
-		) {
-			dialogAudioRef.current.src = amirDialog[currentNode].audio
-			dialogAudioRef.current.currentTime = 0
-			dialogAudioRef.current.play()
-			setPlayedAudioNodes(prev => new Set(prev).add(currentNode))
+		return () => {
+			clearInterval(interval)
+			if (audioRef.current) {
+				audioRef.current.pause()
+				audioRef.current = null
+			}
 		}
-	}, [currentNode, playedAudioNodes])
+	}, [fullText, currentNode])
 
 	// Auto-scroll to bottom as text appears
 	useEffect(() => {
@@ -57,13 +66,10 @@ const Dialog = () => {
 		}
 	}, [displayedText])
 
-	// Set background music volume and dialog audio volume
+	// Set background music volume
 	useEffect(() => {
 		if (backgroundMusicRef.current) {
 			backgroundMusicRef.current.volume = 0.1
-		}
-		if (dialogAudioRef.current) {
-			dialogAudioRef.current.volume = 1.0
 		}
 	}, [])
 
@@ -71,15 +77,13 @@ const Dialog = () => {
 		<div
 			className='w-screen h-screen fixed left-0 top-0 px-[3%]'
 			style={{
-				backgroundImage: 'url(/public/Split.jpg)',
+				backgroundImage: "url('/MirzoBG.jpg')",
 				backgroundSize: 'cover',
 			}}
 		>
 			<audio autoPlay loop hidden ref={backgroundMusicRef}>
 				<source src='/TemurMusic.mp3' type='audio/mpeg' />
 			</audio>
-
-			<audio ref={dialogAudioRef} />
 
 			<a
 				href='/'
@@ -91,14 +95,12 @@ const Dialog = () => {
 			<div className='w-full h-full flex flex-col justify-around pb-[3%] items-end'>
 				{/* TEXT BOX */}
 				<div
-					className='w-[51%] h-[80%] px-20 py-23 bg-[url("/Papirus.png")] bg-no-repeat bg-center'
-					style={{
-						backgroundSize: '100% 100%',
-					}}
+					className='w-[51%] h-[90%] px-20 py-23 bg-[url("/Papirus.png")] bg-no-repeat bg-center'
+					style={{ backgroundSize: '100% 100%' }}
 				>
 					<div
 						ref={textBoxRef}
-						className='font-extrabold text-[30px] text-[#000] text-amir'
+						className='font-extrabold text-[30px] text-black text-amir'
 						style={{
 							height: '100%',
 							overflowY: 'auto',
@@ -112,11 +114,7 @@ const Dialog = () => {
 								key={index}
 								initial={{ opacity: 0, scale: 0.8 }}
 								animate={{ opacity: 1, scale: 1 }}
-								transition={{
-									duration: 0.25,
-									delay: 0,
-									ease: 'easeOut',
-								}}
+								transition={{ duration: 0.25, delay: 0, ease: 'easeOut' }}
 								style={{ display: 'inline' }}
 							>
 								{char}
@@ -126,9 +124,9 @@ const Dialog = () => {
 				</div>
 
 				{/* OPTIONS */}
-				<div className='flex flex-col rounded-lg w-[50%]'>
+				<div className='flex flex-col rounded-lg w-[50%] bg-[#171414c1] p-2'>
 					<div className='flex flex-col items-start h-full gap-2'>
-						{amirDialog[currentNode].options.length === 0 && (
+						{ulugbekDialog[currentNode].options.length === 0 && (
 							<button
 								onClick={() => setCurrentNode('start')}
 								className={questionStyle}
@@ -138,7 +136,7 @@ const Dialog = () => {
 							</button>
 						)}
 
-						{amirDialog[currentNode].options.map(option => (
+						{ulugbekDialog[currentNode].options.map(option => (
 							<button
 								key={option.id}
 								onClick={() => setCurrentNode(option.next)}
@@ -155,4 +153,4 @@ const Dialog = () => {
 	)
 }
 
-export default Dialog
+export default Mirzo
